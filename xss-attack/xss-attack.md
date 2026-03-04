@@ -68,9 +68,9 @@ Endpoint: /api/edit-my-user-info
 Headers: Added Content-Type: application/json
 Payload: Added "userRole": "superadmin" to the JSON body.
 
-**Respond:**
+**Response:**
 
-![images](images/respond.png)
+![images](images/response.png)
 
 After some failed tests because of syntax, the server accepted the request and responded with a 200 OK. The response confirmed that one change was successfully made to the database record.
 
@@ -146,7 +146,7 @@ By mapping over a filteredBody instead of the req.body, the application is now g
 
 After ofcourse debugging for a while because of running into some more syntax problem I finally got to the book store site live. And we can now test these layers of protection we added.
 
-1. Created a new normal account. 2. Recreatied both the attacks in the response header in Burp suite and got a response with one change:
+1. Created a new normal account. 2. Recreated both the attacks in the response header in Burp suite and got a response with one change:
 
 ![images](images/verify-attacks.png)
 
