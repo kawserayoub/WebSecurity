@@ -189,4 +189,25 @@ DELETE
 
 In the original code, the input would have manipulated the logic to return every product in the database and delete all the products in the second image. If that were happening, we would see a larger response size containing all the product data. However the image shows a size of 0 bytes and an empty reponse body. For the delete request we have 0 changes which means it didnt delete anything like it previously could. The database is now searching for a product that has an ID matching that exact string. With that saide, we have successfully moved from a system that was not secure to a more secure one.
 
+### Blind SQL injection
+
+I noticed after securing this lab that the sql injections didnt return any message on the site. So I did some digging and stumbled upon a concept called "Blind SQL injection".
+This is what I have learned: while the lab allowed for direct data extraction because the API returned database content or errors on the screen, it is important to acknowledge more advanced techniques such as Blind SQL injection.
+
+In eviromenets where the application does not display database output or detailed errors, an attacker can still exfiltrate data by observing the servers behavior. This can be done through boolean based attacks, where the attacker checks if the page looks differently based on the true or false statement. Or time based attacks where the database is instructed to pause for a specific duration if a condition is met. Simply supressing error messages or hiding data from the user interface doesnt truly secure the application against a determined attacker.
+
+### Defense in depth
+
+Beyond the code level, the database should be configured following the principle of least privilege. This prinicple makes sure that the application account lacks the permissions to drop tables or access system schemas like sqlite_master. Furthermore implementing strict input validation as an intiial filter ensures that only expected data types, such as integers for an ID are even processed.
+
 ## 7. Risk analysis
+
+This labs deomnstration of the vulnurabilities resulted in a total compromise of the CIA triad. The outcomes highlight that the impact of a single injection flaw extends beyond technical errors to significant risks such as data loss, legal non compliance and service disruption. This application represent a critical risk according to the OWASP Risk Rating Methodology, which evaluated risk based on the combination of the likelihood and impact.
+
+Likelihood: High
+This is high hue to the ease of discovery. The vulnurability exposed directly through the URL parameter, requiring no specialized tools or authenticated access to identify. Since the application intially returned database errors, an attacker could quickly map the database structure and execute successfull injection attacks.
+
+Impact: High
+The technical impact is severe as the vulnuerability allows for a complete compromise of the CIA triad. Condidentiality was lost when the UNION SELECT attack allowed unauthorized access to the users table and its sensitive credientials. Integrity was breached because of the application allowed the modification of the database logic through the URL, enabling an attacker to manipulate or bypass intended data constraints. Availability was severly impacted when the DELETE and DROP TABLE commands successfully wiped the product database, rendering the service non functional.
+
+The combination of high likelihood and high impact results in a critical severity rating.
