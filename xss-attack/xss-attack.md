@@ -157,3 +157,4 @@ The response got me worried for a second because why is there a change? But look
 The change was the username to the xss injection but in string! It also confirmed that the escalation failed!
 
 # 5. Risky analysis
+
