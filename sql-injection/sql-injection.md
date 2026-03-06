@@ -6,7 +6,7 @@ This is a simple local website displaying a product catalog that we are going to
 
 ![images](images/start.png)
 
-#### 1.1 Vulnerability verification
+#### Vulnerability verification
 
 I first tested if the :id parameter was vulnerable to SQL injection by using a classic logical bypass:
 http://localhost:3003/api/products/1 OR 1=1
@@ -15,7 +15,7 @@ The interface returned all products in the database. This confirms that the inpu
 
 ![image1](images/1.png)
 
-#### 1.2 Determining column count
+#### Determining column count
 
 Before using a UNION attack, the number of columns in the original query must match the injected query. I used the ORDER BY clause to find the limit:
 
@@ -31,7 +31,7 @@ Fail:
 
 Since the query succeeded at 4 but failed at 5, the products table has exactly 4 columns.
 
-### 1.3 Enumerating tables and views
+### Enumerating tables and views
 
 Since the backend uses SQLite, I queried the sqlite_master system table to find all existing objects:
 http://localhost:3003/api/products/-1 UNION SELECT name, type, 3, 4 FROM sqlite_master WHERE type IN ('table', 'view')
@@ -74,12 +74,12 @@ The REST interface returned the full list of registered users, exposing their na
 
 ## 4: Deletion of database
 
-### 4.1 Safety measures
+### Safety measures
 
 Before attempting any destructive operations, a backup of the database was created by duplicating products.db into product copy.db:
 ![images7](images/copy.png)
 
-### 4.2 Attempt 1 (Failed):
+### Attempt 1 (Failed):
 
 My first approach was to attempt a stacked query injection by appending a second SQL commant to the URL:
 Payload: http://localhost:3003/api/products/1;%20DROP%20TABLE%20products
@@ -91,7 +91,7 @@ Reults: The application crashed and returned a specific error:
 Analysis:
 This confirms that the backend using the better-sqlite2 library. This specific library is designed with a security feature that explicitly forbids executing more than one sql statement in a single call to .prepare() or .run(). When it detected the semi colon and the second command it blocked the execution entirely to prevent exactly this type of destructive injection.
 
-### 4.3 Attempt 2 (Success):
+### Attempt 2 (Success):
 
 I switched tactics to exploit the DELETE route provided by the API. Using thunder client in VS code, I sent a DELETE request to the following endpoint:
 
@@ -102,7 +102,7 @@ Since 1=1 is always true, the databse ignores the specific ID and applies the de
 
 ![images9](images/deletion.png)
 
-### 4.4. Verification
+### Verification
 
 After executing the request, I refreshed the product page. The interface returned an empty page, confirming the products table had been successfully wiped.
 

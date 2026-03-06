@@ -1,10 +1,10 @@
-# Traversal Attack Report
+# Traversal Attack lab report
 
 The objective of this report is to evaluate the security of a newly deployed photograhpy web application. The goal is to determine if the application is vulnerable to unauthorized data access, specifically through Path traversal techniques.
 
 ![image](images/firstpage.png)
 
-## The attack:
+## 1. The attack:
 
 By examining the web traffic using Burpsuite, a specific endpoint was identified responsible for fetching image data:
 
@@ -26,7 +26,7 @@ The second part is to retrieve the actual contents of a file. For this the targe
 
 ![image](images/content.png)
 
-## The vulnerability and defense:
+## 2. The vulnerability and defense:
 
 This vulnerability is classified under A01:Broken Access control. This category is the most critical risk for web applications and occurs when an application fails to enforece restrictions on what users can access. In this case, the lack of input sanitization allowed an unauthorized user to navigate the servers file system.
 
@@ -40,19 +40,19 @@ startsWith(IMAGE_DIR) is the important check which ensures that even if the user
 
 ![image](images/securecode.png)
 
-## The verification
+## 3. The verification
 
 ![image](images/forbiddenpath.png)
 
 ![image](images/filenotfound.png)
 
-# Defense in Depth
+# 4. Defense in Depth
 
 At the application layer our current fix serves as the first line of defense. However, this should be supported by the Principle of Least Privilege at the operating system level. The node.js process would never run with admin or root privilieges instead it would operate under a restricted service account that possess only read access to the specific directories required for its function such as the frontend and images folders. This makes sure that even if a new vulnerability were discovered that allowed a user to bypass our new function, the underlying operating system would still block any attempt to read sensitive system files or private SSH keys.
 
 At the infrastructure layer we can enforce security through the use of a reverse proxy, such as nginx or waf. These tools can be configred to inspect incoming HTTP requests and automatically drop any traffic containing suspicous patters before they ever reach the backend application. This creates a secondary barrier that filters common automated attacks.
 
-# Risk Analysis
+# 5. Risk Analysis
 
 The likelihood of this attack occurring is High because the vulnerability is trivial to discover and execute. By simply observing the API traffic for the /api/photolist and /api/photo endpoints, an attacker can see that the application uses unvalidated strings to fetch data. Exploitation requires no specialized tools or advanced knowledge; a user only needs to append the ../ sequence to a URL parameter to begin navigating the server's file system. Because the original code directly concatenates these user-provided strings into the file system path, the barrier to entry for an attacker is non-existent.
 
