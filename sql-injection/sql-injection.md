@@ -167,7 +167,7 @@ The DELETE function is signifacntly more dangerous than the GET fucntion beause 
 
 This is function is designed to accept accept only two arguments: the reponse object and the sql query string.
 
-Thr main issue with this structute is that it lacks flexibility. Because the fucntion only accepted a single query, it essentially required us to include all data, directly within the string. This design made it diffcult to practive seucre code. If we wanted to include a users ID or name, we were forced to use techniques like string concatenation or template literals. As we have seen, this is exactly what leads to sql injection.
+Thr main issue with this structure is that it lacks flexibility. Because the function only accepted a single query, it essentially required us to include all data, directly within the string. This design made it diffcult to practice secure code. If we wanted to include a users ID or name, we were forced to use techniques like string concatenation or template literals. As we have seen, this is exactly what leads to sql injection.
 
 The secure verision:
 
