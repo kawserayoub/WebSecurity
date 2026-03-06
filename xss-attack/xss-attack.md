@@ -156,5 +156,12 @@ The response got me worried for a second because why is there a change? But look
 
 The change was the username to the xss injection but in string! It also confirmed that the escalation failed!
 
-# 5. Risky analysis
+# 5. Risk analysis
 
+Stored XSS:
+The likelihood of this attack is High. The vulnerability is in a public registration form. It is very easy to find. Any user can test if the site renders HTML by typing <h1> into the name field. Escalating this to a redirect script requires no special tools. The impact is also High. We proved this by redirecting the Superadmin to an external site. This makes the admin dashboard unusable. In a real attack, this could be used to steal session cookies or passwords.
+
+Privelege escalation:
+The impact here is Critical. Using Burp Suite, we saw that the JSON response reveals the userRole field. The server uses a "Mass Assignment" pattern. It blindly accepts any data sent in the request body. This makes the likelihood of an attack very high for anyone using a proxy. A standard user can simply craft a PUT request to change their own role to "superadmin." This breaks the entire security model of the site. The admin boundary is completely gone.
+
+Given that both the likelihood and impact are high across these vectors, the overall risk severity is classified as Critical because a sophisticated attacker could chain these flaws.
