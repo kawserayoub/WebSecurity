@@ -42,14 +42,14 @@ For the second challenge, we target the product data. We loop through the return
 
 The attack worked because the application logic relied entirely on client side trust. The frontend assumed that the data returned by the fetch call was immutable and authentic. Because javascript allows for the redefinition of global objects, the data was altered before it reached the display logic.
 
-This vulnerability primarily falls under A04:2021 - Insecure Design. The design flaw lies in trusting the client environment to execute critical business logic without server side enforcement. It can also be related to A01:2021 - Broken Access Control as the client is essentially bypassing the access control of the discount validation.
+This vulnerability primarily falls under A04:2021 - Insecure Design. The design flaw lies in trusting the client environment to execute critical business logic without server side enforcement. The vulnerability is not the ability to overwrite the function, which is a standard feature of javascript but rather the implicit trust the application places in the client side environment. Any production ready system following this pattern would be in direct violation of secure architectural principles.
 
 
 ## 3. Defense in depth
 
 The primary defense is to never trust the client. While challenging the UI price is a visual flaw, the real risk occurs if the checkout system also trusts this client side data. If the final payment requests uses the price calculated in the browser, a malicious user could buy products for near zero cost. To avoid this, a site must never trust the client. All price calculations and discount validations must be reverified on the server side before a transaction is finalized.
 
-To complement this server side validation, a Defense in Depth strategy should be employed to harden the frontend against manipulation. Implementing a strict Content Security Policy (CSP) is vital for preventing unauthorized script injections. Although a CSP cannot stop a user from manually executing code in their own developer console, it effectively mitigates XSS-based monkey-patching, where a third-party script might attempt to steal or modify sensitive data. Furthermore, Subresource Integrity (SRI) should be used to ensure that fetched scripts have not been tampered with, maintaining the integrity of the application's original logic.
+To complement this server side validation, a defense in depth strategy should be employed to harden the frontend against manipulation. Implementing a strict CSP, Content Security Policy is important for preventing unauthorized script injections. Although a CSP cannot stop a user from manually executing code in their own developer console, it effectively mitigates XSS based monkey patching, where a 3rd party script might attempt to steal or modify sensitive data. Furthermore, SRI, Subresource Integrity should be used to ensure that fetched scripts have not been tampered with, maintaining the integrity of the application's original logic.
 
 For further protection, techniques such as code obfuscation can be utilized to increase the work factor for an attacker, making it significantly more difficult to identify and patch high value functions. Additionally, the server could cryptographically sign JSON responses, allowing the client to verify data authenticity. However, it is important to acknowledge that key management within a browser is inherently complex and often bypassable by a determined attacker. Ultimately, while these frontend measures provide valuable layers of friction, they serve as secondary defenses; the only true security boundary exists where the server independently validates every claim made by the client.
 
@@ -60,3 +60,7 @@ The likelihood of this vulnerability being exploited is categorized as High. Thi
 The impact is rated as low with a caveat. From a technical standpoint the impact for this specific situation is low. Since monkey patching is performed locally in the users won execution environment, the attacker is essentially tricking themselves. There is no persistence and no propagation.
 
 The risk is classifies as low because in a correctly architected system, the server would ignore the client side changes during the final transaction. A truly dangerous version of this attack would require a secondary vulnerability such as XSS to inject the monkey patch into other users browser. 
+
+## Conclusion
+
+In summary, the attack demonstrates a high degree of control over the local environment but a low degree of control over the application's actual business integrity. It serves as a PoC client-side trust issues rather than a viable method for unauthorized data modification in a production ready system
