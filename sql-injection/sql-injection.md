@@ -2,7 +2,7 @@
 
 ## 1: Identifying SQL injection tactics
 
-This is a simple local website displaying a product catalog that we are going to try to SQL inject without having any prior knowledge of its source code or backend logic. :
+This is a simple local website displaying a product catalog that we are going to try to SQL inject without having any prior knowledge of its source code or backend logic.
 
 ![images](images/start.png)
 
